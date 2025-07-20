@@ -10,12 +10,26 @@ end
 -- @param text string[]: The lines in the buffer
 -- @return present.Slides
 local parse_text = function(text)
+    -- for now the heading1 is the slide separator.
+    local separator = "^# "
     local slides = { slides = {} }
+    -- local current_slide = {}
+
+    local idx = 0
     for _, line in ipairs(text) do
-        print(line)
-        table.insert(slides.slides, line)
+        local sep_location = line:find(separator)
+        if sep_location then
+            idx = idx + 1
+        end
+
+        local existing_slide = slides.slides[idx] or ""
+        table.insert(slides.slides, existing_slide .. "\n" .. line)
     end
+
+    return slides
 end
+
+--[[ test code start ]]
 
 -- @param content string: The content to split
 -- @param delimiter string: The delimiter based on which the string will be splitted.
@@ -108,6 +122,8 @@ local test_string = [==[
 ]==]
 local test_lines = split_strings(test_string, "\n")
 
-parse_text(test_lines)
+vim.print(parse_text(test_lines))
+
+--[[ test code end ]]
 
 return M
